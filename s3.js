@@ -1,6 +1,7 @@
 var fs = require('fs');
 
 var AWS = require('aws-sdk');
+var mime = require('mime');
 var Promise = require('bluebird');
 
 var config = require('./config.json');
@@ -10,7 +11,7 @@ AWS.config.update({
   secretAccessKey: config.s3.secret
 });
 
-exports.uploadS3 = function(file) {
+exports.uploadS3 = function(name, file) {
   var body = fs.createReadStream(file);
 
   var s3obj = new AWS.S3({
@@ -22,7 +23,9 @@ exports.uploadS3 = function(file) {
 
   return new Promise(function(resolve, reject) {
     s3obj.upload({
-      Body: body
+      Key: name,
+      Body: body,
+      ContentType: mime.lookup(file)
     }).on('httpUploadProgress', function(evt) {
       console.log(evt);
     }).send(function(err, data) {

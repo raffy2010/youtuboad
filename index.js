@@ -103,7 +103,7 @@ function handleDownload(videoUrl) {
 
     winston.profile('upload');
 
-    return Promise.all([execCmd(cmd), s3.uploadS3(filename)]);
+    return Promise.all([execCmd(cmd), s3.uploadS3(title, filename)]);
   }).then(function(results) {
     winston.log('info', 'upload result', results);
 
