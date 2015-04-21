@@ -99,12 +99,14 @@ function handleDownload(videoUrl) {
 
     var title = filename.substring(filename.lastIndexOf('/') + 1, filename.lastIndexOf('-'));
 
-    var cmd = ['python', __dirname + '/scripts/youkuUploader.py', '"' + title.replace(/"/, '\"') + '"', '"' + filename.replace(/"/, '\"') + '"'].join(' ');
+    var cmd = ['python', __dirname + '/scripts/youkuUploader.py', "'" + title.replace(/'/, '\'') + "'", "'" + filename.replace(/"/, '\"') + "'"].join(' ');
 
     winston.profile('upload');
 
     return Promise.all([execCmd(cmd), s3.uploadS3(filename)]);
-  }).then(function() {
+  }).then(function(results) {
+    winston.log('info', 'upload result', results);
+
     winston.profile('upload');
 
     return removeFile(this.filename);
