@@ -20,12 +20,11 @@ exports.uploadS3 = function(file) {
     }
   });
 
-  return new Promise(function(resolve, reject, progress) {
+  return new Promise(function(resolve, reject) {
     s3obj.upload({
       Body: body
     }).on('httpUploadProgress', function(evt) {
       console.log(evt);
-      progress(evt);
     }).send(function(err, data) {
       if (err) {
         reject(err);
