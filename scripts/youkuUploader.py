@@ -18,7 +18,7 @@ def main():
         configData = json.load(config_file)
 
     clientId = configData['youku']['client_id']
-    accessToken = configData['youku']['accessToken']
+    accessToken = configData['youku']['access_token']
 
     youku = YoukuUpload(clientId, accessToken, uploadFile)
 
