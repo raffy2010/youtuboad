@@ -26,8 +26,6 @@ exports.uploadS3 = function(name, file) {
       Key: name,
       Body: body,
       ContentType: mime.lookup(file)
-    }).on('httpUploadProgress', function(evt) {
-      console.log(evt);
     }).send(function(err, data) {
       if (err) {
         reject(err);
