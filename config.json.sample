@@ -1,7 +1,8 @@
 {
   "s3": {
     "bucket": "",
-    "key": ""
+    "key": "",
+    "secret": ""
   },
   "youku": {
     "client_id": "",

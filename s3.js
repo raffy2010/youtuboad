@@ -5,6 +5,11 @@ var Promise = require('bluebird');
 
 var config = require('./config.json');
 
+AWS.config.update({
+  accessKeyId: config.s3.key,
+  secretAccessKey: config.s3.secret
+});
+
 exports.uploadS3 = function(file) {
   var body = fs.createReadStream(file);
 
