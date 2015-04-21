@@ -14,7 +14,7 @@ def main():
     }
     uploadFile = args[2]
 
-    with open('../config.json') as config_file:
+    with open('config.json') as config_file:
         configData = json.load(config_file)
 
     clientId = configData['youku']['client_id']
