@@ -1,0 +1,12 @@
+{
+  "s3": {
+    "bucket": "",
+    "key": ""
+  },
+  "youku": {
+    "client_id": "",
+    "client_secret": "",
+    "access_token": "",
+    "refresh_token": ""
+  }
+}
