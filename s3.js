@@ -1,6 +1,7 @@
 var fs = require('fs');
 
 var AWS = require('aws-sdk');
+var Promise = require('bluebird');
 
 var config = require('./config.json');
 
