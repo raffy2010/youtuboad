@@ -14,12 +14,21 @@ exports.uploadS3 = function(file) {
     }
   });
 
-  s3obj.upload({
-    Body: body
-  }).on('httpUploadProgress', function(evt) {
-    console.log(evt);
-  }).send(function(err, data) {
-    console.log(err, data);
+  return new Promise(function(resolve, reject, progress) {
+    s3obj.upload({
+      Body: body
+    }).on('httpUploadProgress', function(evt) {
+      console.log(evt);
+      progress(evt);
+    }).send(function(err, data) {
+      if (err) {
+        reject(err);
+
+        return;
+      }
+
+      resolve(data);
+    });
   });
 };
 

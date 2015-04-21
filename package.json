@@ -3,8 +3,8 @@
   "version": "0.0.1",
   "description": "",
   "main": "index.js",
-  "author": "",
-  "license": "ISC",
+  "author": "Raffy Li",
+  "license": "",
   "dependencies": {
     "aws-sdk": "^2.1.24",
     "bluebird": "^2.9.24",
