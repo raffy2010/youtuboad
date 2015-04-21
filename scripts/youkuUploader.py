@@ -8,11 +8,11 @@ from youku import YoukuUpload
 def main():
     args = sys.argv
     file_info = {
-        'title': args[1],
+        'title': unicode(args[1], 'utf-8'),
         'tags': '体育',
         'description': ''
     }
-    uploadFile = args[2]
+    uploadFile = unicode(args[2], 'utf-8')
 
     with open('config.json') as config_file:
         configData = json.load(config_file)
