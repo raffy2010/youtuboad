@@ -99,7 +99,7 @@ function handleDownload(videoUrl) {
 
     var title = filename.substring(filename.lastIndexOf('/') + 1, filename.lastIndexOf('-'));
 
-    var cmd = ['python', __diename + '/scripts/youkuUploader.py', '"' + title + '"', '"' + filename + '"'].join(' ');
+    var cmd = ['python', __dirname + '/scripts/youkuUploader.py', '"' + title + '"', '"' + filename + '"'].join(' ');
 
     winston.profile('upload');
 
