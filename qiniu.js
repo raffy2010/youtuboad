@@ -1,5 +1,6 @@
 var qiniu = require('qiniu');
 var request = require('request');
+var Promise = require('bluebird');
 
 var config = require('./config.json');
 
