@@ -236,7 +236,7 @@ function extractInfo(str) {
 function commit(videoData) {
   return new Promise(function(resolve, reject) {
     request({
-      url: '/youtube-task/commit',
+      url: 'http://admin.idarex.com/youtube-task/commit',
       form: videoData
     }, function(err, httpRes, body) {
       if (err) {
