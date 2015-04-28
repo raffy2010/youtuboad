@@ -226,7 +226,8 @@ function extractInfo(str) {
     vid: items[0],
     title: items[1],
     cover: items[2],
-    duration: items[3]
+    duration: items[3],
+    description: items.slice(4).join('\n')
   };
 }
 
