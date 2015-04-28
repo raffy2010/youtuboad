@@ -9,8 +9,8 @@ def main():
     args = sys.argv
     file_info = {
         'title': unicode(args[1], 'utf-8'),
-        'tags': '体育',
-        'description': ''
+        'category': '体育',
+        'description': unicode(args[3], 'utf-8')
     }
     uploadFile = unicode(args[2], 'utf-8')
 
@@ -22,6 +22,6 @@ def main():
 
     youku = YoukuUpload(clientId, accessToken, uploadFile)
 
-    youku.upload(file_info)
+    return youku.upload(file_info)
 
 main()

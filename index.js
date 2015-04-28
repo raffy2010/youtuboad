@@ -4,6 +4,7 @@ var fs = require('fs');
 var qs = require('querystring');
 var path = require('path');
 
+var request = require('request');
 var express = require('express');
 var bodyParser = require('body-parser');
 var multer = require('multer');
@@ -11,12 +12,12 @@ var kue = require('kue');
 var Promise = require('bluebird');
 var winston = require('winston');
 
-var s3 = require('./s3');
-
 var app = express(),
     queue = kue.createQueue();
 
 var rootDir = '/home/raffy/youtube';
+
+var qiniuService = require('./qiniu');
 
 
 // log service
@@ -41,11 +42,15 @@ app.use(multer());
 // app route
 app.post('/youtube/transmit', function(req, res) {
   var videoUrl = req.body.url,
-      videoId = req.body.video_id;
+      taskId = req.body.task_id,
+      videoTitle = req.body.video_title,
+      videoDesc = req.body.video_desc;
 
   var job = queue.create('youtube-download', {
     videoUrl: videoUrl,
-    videoId: videoId
+    taskId: taskId,
+    videoTitle: videoTitle,
+    videoDesc: videoDesc
   }).save(function(err) {
     if (err) {
       res.json({
@@ -65,18 +70,18 @@ app.listen(2014);
 
 // handle download queue job
 queue.process('youtube-download', function(job, done) {
-  var videoUrl = job.data.videoUrl,
-      videoId = job.data.videoId;
+  var videoUrl = job.data.videoUrl;
 
   winston.log('info', 'download', videoUrl);
 
-  handleDownload(videoUrl).then(function() {
+  handleDownload(job.data).then(function() {
     done();
   });
 });
 
-function handleDownload(videoUrl) {
-  var youtubeVid = qs.parse(url.parse(videoUrl).search.substr(1))['v'];
+function handleDownload(taskData) {
+  var videoUrl = taskData.videoUrl,
+      youtubeVid = qs.parse(url.parse(videoUrl).search.substr(1))['v'];
 
   var cmd = 'youtube-dl -F ' + videoUrl;
 
@@ -97,19 +102,37 @@ function handleDownload(videoUrl) {
   }).then(function(filename) {
     this.filename = filename;
 
-    var title = filename.substring(filename.lastIndexOf('/') + 1, filename.lastIndexOf('-'));
+    var title = taskData.videoTitle;
 
-    var cmd = ['python', __dirname + '/scripts/youkuUploader.py', '"' + title.replace(/"/, '\\"') + '"', '"' + filename.replace(/"/, '\\"') + '"'].join(' ');
-
-    winston.profile('upload');
-
-    return Promise.all([execCmd(cmd), s3.uploadS3(title, filename)]);
-  }).then(function(results) {
-    winston.log('info', 'upload result', results);
+    var cmd = ['python', __dirname + '/scripts/youkuUploader.py', '"' + title.replace(/"/, '\\"') + '"', '"' + filename.replace(/"/, '\\"') + '"', '"' + taskData.videoDesc.replace(/"/, '\\"') + '"'].join(' ');
 
     winston.profile('upload');
 
-    return removeFile(this.filename);
+    return execCmd(cmd);
+  }).then(function(result) {
+    winston.log('info', 'upload result', result);
+
+    winston.profile('upload');
+
+    this.vid = result;
+
+    var cmd = ['youtube-dl', '--get-id --get-title --get-thumbnail --get-duration --get-description', videoUrl].join(' ');
+
+    return execCmd(cmd);
+  }).then(function(str) {
+    var videoData = extractInfo(str);
+
+    videoData.youku_vid = this.vid;
+    videoData.url = videoUrl;
+    videoData.channel = '';
+
+    this.videoData = videoData;
+
+    return qiniuService.transferImage(videoData.cover);
+  }).then(function(key) {
+    this.videoData.cover = key;
+
+    return commit(videoData);
   });
 }
 
@@ -191,6 +214,38 @@ function removeFile(filename) {
       }
 
       resolve();
+    });
+  });
+}
+
+function extractInfo(str) {
+  var items = str.split(/[\n\r]/);
+
+  return {
+    vid: items[0],
+    title: items[1],
+    cover: items[2],
+    duration: items[3]
+  };
+}
+
+function commit(videoData) {
+  return new Promise(function(resolve, reject) {
+    request({
+      url: '/youtube-task/commit',
+      form: videoData
+    }, function(err, httpRes, body) {
+      if (err) {
+        reject(err);
+
+        return;
+      }
+
+      if (httpRes.code === 200 && body.success == 1) {
+        resolve();
+      } else {
+        reject();
+      }
     });
   });
 }

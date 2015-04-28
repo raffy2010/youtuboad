@@ -4,6 +4,10 @@
     "key": "",
     "secret": ""
   },
+  "qiniu": {
+    "access_key": "",
+    "secret_key": ""
+  },
   "youku": {
     "client_id": "",
     "client_secret": "",
