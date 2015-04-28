@@ -46,6 +46,8 @@ app.post('/youtube/transmit', function(req, res) {
       videoTitle = req.body.video_title,
       videoDesc = req.body.video_desc;
 
+  winston.log('info', 'post data', req.body);
+
   var job = queue.create('youtube-download', {
     videoUrl: videoUrl,
     taskId: taskId,
