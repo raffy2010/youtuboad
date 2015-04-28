@@ -3,8 +3,8 @@ var request = require('request');
 
 var config = require('./config.json');
 
-var accessKey = conf.qiniu.asscee_key,
-    secretKey = conf.qiniu.secret_key;
+var accessKey = config.qiniu.asscee_key,
+    secretKey = config.qiniu.secret_key;
 
 qiniu.conf.ACCESS_KEY = accessKey;
 qiniu.conf.SECRET_KEY = secretKey;
