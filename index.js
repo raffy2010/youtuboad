@@ -125,6 +125,7 @@ function handleDownload(taskData) {
     videoData.youku_vid = this.vid;
     videoData.url = videoUrl;
     videoData.channel = '';
+    videoData.task_id = taskData.taskId;
 
     this.videoData = videoData;
 
@@ -132,7 +133,7 @@ function handleDownload(taskData) {
   }).then(function(key) {
     this.videoData.cover = key;
 
-    return commit(videoData);
+    return commit(this.videoData);
   });
 }
 
