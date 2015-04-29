@@ -33,14 +33,16 @@ function downloadImage(url) {
 function uploadImage(buf) {
   var token = genToken();
 
-  qiniu.io.putFile(token, accessKey, buf, null, function(err, ret) {
-    if (err) {
-      reject(err);
+  return new Promise(function(resolve, reject) {
+    qiniu.io.putFile(token, accessKey, buf, null, function(err, ret) {
+      if (err) {
+        reject(err);
 
-      return;
-    }
+        return;
+      }
 
-    resolve(ret.key);
+      resolve(ret.key);
+    });
   });
 }
 
