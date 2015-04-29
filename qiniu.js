@@ -7,6 +7,8 @@ var config = require('./config.json');
 var accessKey = config.qiniu.access_key,
     secretKey = config.qiniu.secret_key;
 
+var host = '7xityn.com2.z0.glb.qiniucdn.com/';
+
 qiniu.conf.ACCESS_KEY = accessKey;
 qiniu.conf.SECRET_KEY = secretKey;
 
@@ -44,7 +46,7 @@ function uploadImage(buf) {
         return;
       }
 
-      resolve(ret.key);
+      resolve(host + ret.key);
     });
   });
 }

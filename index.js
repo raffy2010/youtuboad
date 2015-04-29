@@ -229,7 +229,7 @@ function removeFile(filename) {
 
 function commit(videoData) {
   return new Promise(function(resolve, reject) {
-    request({
+    request.post({
       url: 'http://admin.idarex.com/youtube-task/commit',
       form: videoData
     }, function(err, httpRes, body) {
@@ -239,10 +239,10 @@ function commit(videoData) {
         return;
       }
 
-      if (httpRes.code === 200 && body.success == 1) {
+      if (httpRes.statusCode === 200 && body.success == 1) {
         resolve();
       } else {
-        reject();
+        reject(new Error('error in commit video info'));
       }
     });
   });
