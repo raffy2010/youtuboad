@@ -36,7 +36,7 @@ function uploadImage(buf) {
   var token = genToken();
 
   return new Promise(function(resolve, reject) {
-    qiniu.io.putFile(token, accessKey, buf, null, function(err, ret) {
+    qiniu.io.put(token, accessKey, buf, null, function(err, ret) {
       if (err) {
         reject(err);
 

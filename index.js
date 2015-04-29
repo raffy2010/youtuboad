@@ -135,6 +135,8 @@ function handleDownload(taskData) {
       task_id: taskData.taskId
     };
 
+    winston.log('info', 'video data', this.videoData);
+
     return qiniuService.transferImage(this.videoData.cover);
   }).then(function(key) {
     this.videoData.cover = key;
