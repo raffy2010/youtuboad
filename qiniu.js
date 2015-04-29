@@ -11,7 +11,9 @@ qiniu.conf.ACCESS_KEY = accessKey;
 qiniu.conf.SECRET_KEY = secretKey;
 
 function genToken() {
-  var putPolicy = new qiniu.rs.PutPolicy();
+  var putPolicy = new qiniu.rs.PutPolicy({
+    scope: 'youtube-cover'
+  });
 
   return putPolicy.token();
 }
