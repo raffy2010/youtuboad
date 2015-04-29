@@ -118,20 +118,24 @@ function handleDownload(taskData) {
 
     this.vid = result;
 
-    var cmd = ['youtube-dl', '--get-id --get-title --get-thumbnail --get-duration --get-description', videoUrl].join(' ');
+    var cmd = ['youtube-dl', '-j', videoUrl].join(' ');
 
     return execCmd(cmd);
   }).then(function(str) {
-    var videoData = extractInfo(str);
+    var videoData = JSON.parse(str);
 
-    videoData.youku_vid = this.vid;
-    videoData.url = videoUrl;
-    videoData.channel = '';
-    videoData.task_id = taskData.taskId;
+    this.videoData = {
+      youku_vid: this.vid,
+      vid: videoData.display_id,
+      title: videoData.title,
+      description: videoData.description,
+      duration: videoData.duration,
+      channel: videoData.uploader,
+      cover: videoData.thumbnail,
+      task_id: taskData.taskId
+    };
 
-    this.videoData = videoData;
-
-    return qiniuService.transferImage(videoData.cover);
+    return qiniuService.transferImage(this.videoData.cover);
   }).then(function(key) {
     this.videoData.cover = key;
 
@@ -219,27 +223,6 @@ function removeFile(filename) {
       resolve();
     });
   });
-}
-
-function extractInfo(str) {
-  var items = str.split(/[\n\r]/);
-
-  return {
-    vid: items[0],
-    title: items[1],
-    cover: items[2],
-    duration: durationSeconds(items[3]),
-    description: items.slice(4).join('\n')
-  };
-}
-
-function durationSeconds(duration) {
-  var items = duration.split(':').reverse().slice(0, 3),
-      second = parseInt(items[0], 10) || 0,
-      min = parseInt(items[1], 10) || 0,
-      hour = parseInt(items[2], 10) || 0;
-
-  return second + min * 60 + hour * 3600;
 }
 
 function commit(videoData) {
