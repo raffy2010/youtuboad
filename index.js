@@ -239,6 +239,8 @@ function commit(videoData) {
         return;
       }
 
+      winston.log('info', 'commit response data', body);
+
       if (httpRes.statusCode === 200 && body.success == 1) {
         resolve();
       } else {
