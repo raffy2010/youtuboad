@@ -228,9 +228,18 @@ function extractInfo(str) {
     vid: items[0],
     title: items[1],
     cover: items[2],
-    duration: items[3],
+    duration: durationSeconds(items[3]),
     description: items.slice(4).join('\n')
   };
+}
+
+function durationSeconds(duration) {
+  var items = duration.split(':').reverse().slice(0, 3),
+      second = parseInt(items[0], 10) || 0,
+      min = parseInt(items[1], 10) || 0,
+      hour = parseInt(items[2], 10) || 0;
+
+  return second + min * 60 + hour * 3600;
 }
 
 function commit(videoData) {
