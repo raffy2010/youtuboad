@@ -1,3 +1,5 @@
+var fs = require('fs');
+
 var qiniu = require('qiniu');
 var request = require('request');
 var Promise = require('bluebird');
@@ -37,11 +39,25 @@ function downloadImage(url) {
   });
 }
 
-function uploadImage(buf) {
+function writeImage(buf) {
+  return new Promise(function(resolve, reject) {
+    fs.writeFile('/tmp/youtube-cover', buf, function(err) {
+      if (err) {
+        reject(err);
+
+        return;
+      }
+
+      resolve();
+    });
+  });
+}
+
+function uploadImage(file) {
   var token = genToken();
 
   return new Promise(function(resolve, reject) {
-    qiniu.io.put(token, accessKey, buf, null, function(err, ret) {
+    qiniu.io.putFile(token, accessKey, file, null, function(err, ret) {
       if (err) {
         winston.log('info', 'qiniu error', err);
         reject(err);
@@ -58,7 +74,9 @@ function uploadImage(buf) {
 
 exports.transferImage = function(url) {
   return downloadImage(url).then(function(body) {
-    return uploadImage(body);
+    return writeImage(body);
+  }).then(function() {
+    return uploadImage('/tmp/youtube-cover');
   });
 };
 
