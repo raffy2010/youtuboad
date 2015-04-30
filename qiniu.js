@@ -4,6 +4,8 @@ var Promise = require('bluebird');
 
 var config = require('./config.json');
 
+var winston = require('./log');
+
 var accessKey = config.qiniu.access_key,
     secretKey = config.qiniu.secret_key;
 
@@ -41,10 +43,13 @@ function uploadImage(buf) {
   return new Promise(function(resolve, reject) {
     qiniu.io.put(token, accessKey, buf, null, function(err, ret) {
       if (err) {
+        winston.log('info', 'qiniu error', err);
         reject(err);
 
         return;
       }
+
+      winston.log('info', 'qiniu upload result', ret);
 
       resolve(host + ret.key);
     });

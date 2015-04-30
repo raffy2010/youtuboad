@@ -10,7 +10,6 @@ var bodyParser = require('body-parser');
 var multer = require('multer');
 var kue = require('kue');
 var Promise = require('bluebird');
-var winston = require('winston');
 
 var app = express(),
     queue = kue.createQueue();
@@ -19,16 +18,7 @@ var rootDir = '/home/raffy/youtube';
 
 var qiniuService = require('./qiniu');
 
-
-// log service
-winston.add(winston.transports.File, {
-  filename: 'app.log'
-});
-
-winston.handleExceptions(new winston.transports.File({
-  filename: 'winston.log',
-  prettyPrint: true
-}));
+var winston = require('./log');
 
 
 // express middleware
