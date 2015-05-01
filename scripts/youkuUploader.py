@@ -22,6 +22,9 @@ def main():
 
     youku = YoukuUpload(clientId, accessToken, uploadFile)
 
-    return youku.upload(file_info)
+    ret = youku.upload(file_info)
+
+    sys.stdout.write(ret)
+    sys.stdout.flush()
 
 main()
