@@ -68,6 +68,8 @@ queue.process('youtube-download', function(job, done) {
 
   handleDownload(job.data).then(function() {
     done();
+  }, function(err) {
+    done(err);
   });
 });
 
