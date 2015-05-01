@@ -39,25 +39,11 @@ function downloadImage(url) {
   });
 }
 
-function writeImage(buf) {
-  return new Promise(function(resolve, reject) {
-    fs.writeFile('/tmp/youtube-cover', buf, function(err) {
-      if (err) {
-        reject(err);
-
-        return;
-      }
-
-      resolve();
-    });
-  });
-}
-
-function uploadImage(file) {
+function uploadImage(buf) {
   var token = genToken();
 
   return new Promise(function(resolve, reject) {
-    qiniu.io.putFile(token, accessKey, file, null, function(err, ret) {
+    qiniu.io.put(token, accessKey, buf, null, function(err, ret) {
       if (err) {
         winston.log('info', 'qiniu error', err);
         reject(err);
@@ -74,9 +60,7 @@ function uploadImage(file) {
 
 exports.transferImage = function(url) {
   return downloadImage(url).then(function(body) {
-    return writeImage(body);
-  }).then(function() {
-    return uploadImage('/tmp/youtube-cover');
+    return uploadImage(body);
   });
 };
 
