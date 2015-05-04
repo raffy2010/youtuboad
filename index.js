@@ -98,17 +98,19 @@ function handleDownload(taskData) {
 
     var title = taskData.videoTitle;
 
-    var cmd = ['python', __dirname + '/scripts/youkuUploader.py', '"' + title.replace(/"/, '\\"') + '"', '"' + filename.replace(/"/, '\\"') + '"', '"' + taskData.videoDesc.replace(/"/, '\\"') + '"'].join(' ');
+    var uploadYouku = ['python', __dirname + '/scripts/youkuUploader.py', '"' + title.replace(/"/, '\\"') + '"', '"' + filename.replace(/"/, '\\"') + '"', '"' + taskData.videoDesc.replace(/"/, '\\"') + '"'].join(' ');
 
     winston.profile('upload');
 
-    return execCmd(cmd);
+    var uploadBaidu = ['bypy', 'upload', '"' + filename.replace(/"/, '\\"') + '"'].join(' ');
+
+    return Promise.all([execCmd(uploadYouku), execCmd(uploadBaidu)]);
   }).then(function(result) {
     winston.log('info', 'upload result', result);
 
     winston.profile('upload');
 
-    this.vid = result;
+    this.vid = result[0];
 
     var cmd = ['youtube-dl', '-j', videoUrl].join(' ');
 
