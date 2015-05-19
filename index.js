@@ -61,7 +61,7 @@ app.listen(2014);
 
 
 // handle download queue job
-queue.process('youtube-download', function(job, done) {
+queue.process('youtube-download', 3, function(job, done) {
   var videoUrl = job.data.videoUrl;
 
   winston.log('info', 'download', videoUrl);
