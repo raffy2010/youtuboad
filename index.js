@@ -63,7 +63,7 @@ app.listen(2014);
 kue.app.listen(3000);
 
 // handle download queue job
-queue.process('youtube-download', 3, function(job, done) {
+queue.process('youtube-download', function(job, done) {
   var domain = require('domain').create();
 
   domain.on('error', function(err){
