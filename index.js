@@ -59,17 +59,27 @@ app.post('/youtube/transmit', function(req, res) {
 // knock out
 app.listen(2014);
 
+// queue web-ui
+kue.app.listen(3000);
 
 // handle download queue job
 queue.process('youtube-download', 3, function(job, done) {
-  var videoUrl = job.data.videoUrl;
+  var domain = require('domain').create();
 
-  winston.log('info', 'download', videoUrl);
-
-  handleDownload(job.data).then(function() {
-    done();
-  }, function(err) {
+  domain.on('error', function(err){
     done(err);
+  });
+
+  domain.run(function() {
+    var videoUrl = job.data.videoUrl;
+
+    winston.log('info', 'download', videoUrl);
+
+    handleDownload(job.data).then(function() {
+      done();
+    }, function(err) {
+      done(err);
+    });
   });
 });
 
