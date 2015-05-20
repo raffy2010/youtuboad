@@ -109,7 +109,7 @@ function handleDownload(taskData) {
     this.originFilename = filename;
     this.filename = filename.substr(0, index) + filename.substr(index + 7);
 
-    var cmd = ['sh', __dirname + '/scripts/addSubtitle.sh', '"' + rootDir + '/' + this.originFilename.replace(/"/, '\\"') + '"', '"' + rootDir + '/' + this.filename.replace(/"/, '\\"') + '"', __dirname + '/logo_text.png'];
+    var cmd = ['sh', __dirname + '/scripts/addSubtitle.sh', '"' + this.originFilename.replace(/"/, '\\"') + '"', '"' + this.filename.replace(/"/, '\\"') + '"', __dirname + '/logo_text.png'];
 
     return execCmd(cmd);
   }).then(function() {
