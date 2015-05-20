@@ -92,7 +92,7 @@ function handleDownload(taskData) {
   return execCmd(cmd).bind({})
   .then(function(stdout) {
     var format = selectVideoFormat(stdout),
-        cmd = ['youtube-dl', '-o', "'" + rootDir + "/%(title)s-%(id)s_origin.%(ext)s'", '-f', format, videoUrl].join(' ');
+        cmd = ['youtube-dl', '-o', "'" + rootDir + "/%(title)s-%(id)s.%(ext)s'", '-f', format, videoUrl].join(' ');
 
     winston.profile('download');
 
@@ -104,15 +104,8 @@ function handleDownload(taskData) {
 
     return findFile(this.destFile, youtubeVid);
   }).then(function(filename) {
-    var index = filename.lastIndexOf('_');
+    this.filename = filename;
 
-    this.originFilename = filename;
-    this.filename = filename.substr(0, index) + filename.substr(index + 7);
-
-    var cmd = ['sh', __dirname + '/scripts/addSubtitle.sh', '"' + this.originFilename.replace(/"/, '\\"') + '"', '"' + this.filename.replace(/"/, '\\"') + '"', __dirname + '/logo_text.png'].join(' ');
-
-    return execCmd(cmd);
-  }).then(function() {
     var title = taskData.videoTitle;
 
     var uploadYouku = ['python', __dirname + '/scripts/youkuUploader.py', '"' + title.replace(/"/, '\\"') + '"', '"' + this.filename.replace(/"/, '\\"') + '"', '"' + taskData.videoDesc.replace(/"/, '\\"') + '"'].join(' ');
@@ -154,7 +147,7 @@ function handleDownload(taskData) {
 
     return commit(this.videoData);
   }).then(function() {
-    return Promise.all([removeFile(this.filename), removeFile(this.originFilename)]);
+    return removeFile(this.filename);
   });
 }
 
