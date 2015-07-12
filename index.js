@@ -10,6 +10,7 @@ var bodyParser = require('body-parser');
 var multer = require('multer');
 var kue = require('kue');
 var Promise = require('bluebird');
+var auth = require('basic-auth');
 
 var app = express(),
     queue = kue.createQueue();
@@ -18,8 +19,20 @@ var monitorApp = express();
 
 var monitorConfig = require('./config.json').monitor;
 
-monitorApp.use(express.basicAuth(monitorConfig.user, monitorConfig.password
-));
+monitorApp.use(function(req, res, next) {
+  var user = auth(req);
+
+  if (user &&
+      user.name === monitorConfig.user &&
+      user.pass === monitorConfig.password) {
+
+    next();
+  } else {
+    res.statusCode = 401;
+    res.setHeader('WWW-Authenticate', 'Basic realm="example"');
+    res.end('Access denied');
+  }
+});
 
 monitorApp.use(kue.app);
 
