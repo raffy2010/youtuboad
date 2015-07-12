@@ -29,8 +29,8 @@ monitorApp.use(function(req, res, next) {
 
     next();
   } else {
-    res.statusCode = 401;
-    res.setHeader('WWW-Authenticate', 'Basic realm="example"');
+    res.status(401);
+    res.set('WWW-Authenticate', 'Basic realm="example"');
     res.end('Access denied');
   }
 });
