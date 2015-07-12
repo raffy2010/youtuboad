@@ -3,6 +3,7 @@ var url = require('url');
 var fs = require('fs');
 var qs = require('querystring');
 var path = require('path');
+var https = require('https');
 
 var request = require('request');
 var express = require('express');
