@@ -14,6 +14,22 @@ var Promise = require('bluebird');
 var app = express(),
     queue = kue.createQueue();
 
+var monitorApp = express();
+
+var monitorConfig = require('./config.json').monitor;
+
+monitorApp.use(express.basicAuth(monitorConfig.user, monitorConfig.password
+));
+
+monitorApp.use(kue.app);
+
+var monitorOptions = {
+  key: fs.readFileSync(monitorConfig.key),
+  cert: fs.readFileSync(monitorConfig.cert)
+};
+
+var monitorServer = https.createServer(monitorOptions, monitorApp);
+
 var rootDir = '/home/raffy/youtube';
 
 var qiniuService = require('./qiniu');
@@ -60,7 +76,7 @@ app.post('/youtube/transmit', function(req, res) {
 app.listen(2014);
 
 // queue web-ui
-kue.app.listen(3000);
+monitorServer.listen(3000);
 
 // handle download queue job
 queue.process('youtube-download', function(job, done) {
