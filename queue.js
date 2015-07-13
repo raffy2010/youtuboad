@@ -38,6 +38,72 @@ queue.process('youtube-download', 3, function(job, done) {
   });
 });
 
+function retry(taskId) {
+  return getJobs('failed').then(function(jobs) {
+    var job;
+
+    if (jobs.length && (job = findJob(jobs, taskId))) {
+      return job;
+    } else {
+      return getJobs('complete');
+    }
+  }).then(function(data) {
+    var job;
+
+    if (Array.isArray(data)) {
+      job = findJob(jobs, taskId);
+    } else {
+      job = data;
+    }
+
+    if (job) {
+      return retryJob(job);
+    } else {
+      return Promise.reject();
+    }
+  });
+}
+
+function getJobs(state) {
+  return new Promise(function(resolve, reject) {
+    kue.Job.rangeByType('youtube-download', state, 0, -1, 'asc', function(err, jobs) {
+      if (err) {
+        reject(err);
+
+        return;
+      }
+
+      resolve(jobs);
+    });
+  });
+}
+
+function findJob(jobs, taskId) {
+  var job;
+
+  for (var i = 0, l = jobs.length; i < l; i ++) {
+    job = jobs[i];
+
+    if (job.data && job.data.taskId === taskId) {
+      return job;
+    }
+  }
+}
+
+function retryJob(job) {
+  return new Promise(function(resolve, reject) {
+    job.state('inactive', function(err, res) {
+      if (err) {
+        reject(err);
+
+        return;
+      }
+
+      resolve();
+    });
+  });
+}
+
 function handleDownload(taskData) {
   var videoUrl = taskData.videoUrl,
       youtubeVid = qs.parse(url.parse(videoUrl).search.substr(1))['v'];
@@ -214,4 +280,5 @@ function commit(videoData) {
 }
 
 exports.queue = queue;
+exports.retry = retry;
 

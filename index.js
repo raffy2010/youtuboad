@@ -16,6 +16,21 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(multer());
 
+app.post('/youtube/retry-transmit', function(req, res) {
+  var taskId = req.body.task_id;
+
+  winston.log('info', 'post data', req.body);
+
+  queue.retry(taskId).then(function() {
+    res.json({
+      success: 1
+    });
+  }, function(err) {
+    res.json({
+      success: 0
+    });
+  });
+});
 
 // app route
 app.post('/youtube/transmit', function(req, res) {
@@ -26,7 +41,7 @@ app.post('/youtube/transmit', function(req, res) {
 
   winston.log('info', 'post data', req.body);
 
-  var job = queue.create('youtube-download', {
+  var job = queue.queue.create('youtube-download', {
     videoUrl: videoUrl,
     taskId: taskId,
     videoTitle: videoTitle,
