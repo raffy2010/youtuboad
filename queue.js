@@ -51,7 +51,7 @@ function retry(taskId) {
     var job;
 
     if (Array.isArray(data)) {
-      job = findJob(jobs, taskId);
+      job = findJob(data, taskId);
     } else {
       job = data;
     }
